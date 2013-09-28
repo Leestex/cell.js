@@ -111,6 +111,8 @@
         return new Cell( Array.prototype.slice.call( arguments, 0 ) );
     };
 
+    cell.ctor = Cell;
+
     if ( typeof module === 'object' && module && typeof module.exports === 'object' ) {
         module.exports = cell;
     } else if ( typeof define === 'function' && define.amd ) {

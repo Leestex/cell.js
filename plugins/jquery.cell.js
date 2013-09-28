@@ -1,9 +1,7 @@
-;(function ( $, window, undefined ) {
+;(function ( $, window, cell, undefined ) {
 
     $.fn.cell = function ( options ) {
-        return this.each(function () {
-            
-        });
+        return new cell.ctor( arguments );
     };
 
-})( jQuery, window );
+})( jQuery, window, cell );

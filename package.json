@@ -1,0 +1,19 @@
+{
+    "author": "Nazar Kuzmenko",
+    "name": "Celljs",
+    "description": "Simple JavaScript library for FRP",
+    "keywords": ["frp", "cell", "celljs"],
+    "version": "1.0.0",
+    "homepage": "http://leestex.github.io/cell.js/",
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "https://github.com/Leestex/cell.js/blob/master/LICENSE"
+        }
+    ],
+    "main": "cell.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Leestex/cell.js.git"
+    }
+}
