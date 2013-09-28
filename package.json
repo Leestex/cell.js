@@ -1,5 +1,5 @@
 {
-    "author": "Nazar Kuzmenko",
+    "author": "Nazar Kuzmenko <nazar@streamcrease.com>",
     "name": "Celljs",
     "description": "Simple JavaScript library for FRP",
     "keywords": ["frp", "cell", "celljs"],
@@ -11,9 +11,18 @@
             "url": "https://github.com/Leestex/cell.js/blob/master/LICENSE"
         }
     ],
-    "main": "cell.js",
+    "main": "cell",
+    "engines": {
+        "node": "*"
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/Leestex/cell.js.git"
-    }
+    },
+    "contributors": [
+        {
+          "name": "Nazar Kuzmenko",
+          "email": "nazar@streamcrease.com"
+        }
+    ]
 }
