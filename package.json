@@ -1,6 +1,6 @@
 {
     "author": "Nazar Kuzmenko <nazar@streamcrease.com>",
-    "name": "Celljs",
+    "name": "celljs",
     "description": "Simple JavaScript library for FRP",
     "keywords": ["frp", "cell", "celljs"],
     "version": "1.0.0",
