@@ -9,7 +9,7 @@
         this.deps = [];
         this.usage = [];
 
-        if ( typeof options[ 0 ] == 'function' ) {
+        if ( typeof options[ 0 ] === 'function' ) {
             this.formula = options[ 0 ];
             this.usage = options.slice( 1 );
             this.utils.each( this.usage, function ( cell, index ) {
@@ -70,7 +70,7 @@
         var result = false;
 
         this.utils.each( from, function ( cell, index ) {
-            if ( cell._id == id ) {
+            if ( cell._id === id ) {
                 result = index;
             }
         }, this );
@@ -111,6 +111,12 @@
         return new Cell( Array.prototype.slice.call( arguments, 0 ) );
     };
 
-    window.cell = cell;
+    if ( typeof module === 'object' && module && typeof module.exports === 'object' ) {
+        module.exports = cell;
+    } else if ( typeof define === 'function' && define.amd ) {
+        define( 'cell', [], function () { return cell; } );
+    } else if ( window ) {
+        window.cell = cell;
+    }
 
 })( window );
