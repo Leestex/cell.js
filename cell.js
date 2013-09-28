@@ -1,7 +1,10 @@
 ;(function ( window, undefined ) {
 
+    var lastId = 0;
+
     var Cell = function Cell ( options ) {
 
+        this._id = lastId++;
         this._value = undefined;
         this.deps = [];
         this.usage = [];
@@ -60,6 +63,31 @@
 
         for ( var i = 0; i < this.deps.length; i++ ) {
             this.deps[ i ].calculate();
+        }
+
+    };
+
+    Cell.prototype.getDepIndexById = function ( from, id ) {
+
+        for ( var i = 0; i < from.length; i++ ) {
+            if ( from[ i ]._id == id ) {
+                return i;
+            }
+        }
+
+        return false;
+
+    };
+
+    Cell.prototype.delete = function () {
+
+        var index;
+
+        for ( var i = 0; i < this.usage.length; i++ ) {
+            index = this.getDepIndexById( this.usage[ i ].deps, this._id );
+            if ( index !== false ) {
+                this.usage[ i ].deps.splice( index, 1 );
+            }
         }
 
     };
