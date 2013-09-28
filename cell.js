@@ -12,9 +12,9 @@
         if ( typeof options[ 0 ] == 'function' ) {
             this.formula = options[ 0 ];
             this.usage = options.slice( 1 );
-            for ( var i = 0; i < this.usage.length; i++ ) {
-                this.usage[ i ].deps.push( this );
-            }
+            this.utils.each( this.usage, function ( cell, index ) {
+                cell.deps.push( this );
+            }, this );
         } else {
             this._value = options[ 0 ];
         }
@@ -49,11 +49,9 @@
 
         var result = [];
 
-        if ( this.usage && this.usage.length ) {
-            for ( var i = 0; i < this.usage.length; i++ ) {
-                result[ i ] = this.usage[ i ].value();
-            }
-        }
+        this.utils.each( this.usage, function ( cell, index ) {
+            result[ index ] = cell.value();
+        }, this );
 
         return result;
 
@@ -61,33 +59,50 @@
 
     Cell.prototype.updateDeps = function () {
 
-        for ( var i = 0; i < this.deps.length; i++ ) {
-            this.deps[ i ].calculate();
-        }
+        this.utils.each( this.deps, function ( cell ) {
+            cell.calculate();
+        }, this );
 
     };
 
     Cell.prototype.getDepIndexById = function ( from, id ) {
 
-        for ( var i = 0; i < from.length; i++ ) {
-            if ( from[ i ]._id == id ) {
-                return i;
-            }
-        }
+        var result = false;
 
-        return false;
+        this.utils.each( from, function ( cell, index ) {
+            if ( cell._id == id ) {
+                result = index;
+            }
+        }, this );
+
+        return result;
 
     };
 
     Cell.prototype.delete = function () {
 
-        var index;
-
-        for ( var i = 0; i < this.usage.length; i++ ) {
-            index = this.getDepIndexById( this.usage[ i ].deps, this._id );
+        this.utils.each( this.usage, function ( cell ) {
+            var index = this.getDepIndexById( cell.deps, this._id );
             if ( index !== false ) {
-                this.usage[ i ].deps.splice( index, 1 );
+                cell.deps.splice( index, 1 );
             }
+        }, this );
+
+    };
+
+    Cell.prototype.utils = {
+
+        each: function ( arr, fn, ctx ) {
+
+            var i = 0,
+                len = arr.length;
+
+            if ( !arr || !arr.length ) { return false; }
+
+            for ( i; i < len; i++ ) {
+                fn.call( ctx || Cell, arr[ i ], i, arr );
+            }
+
         }
 
     };
