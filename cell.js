@@ -8,6 +8,7 @@
         this._value = undefined;
         this.deps = [];
         this.usage = [];
+        this.handlers = {};
 
         if ( typeof options[ 0 ] === 'function' ) {
             this.formula = options[ 0 ];
@@ -90,17 +91,80 @@
 
     };
 
+    Cell.prototype.on = function ( event, callback, context ) {
+
+        if ( !this.handlers[ event ] ) { this.handlers[ event ] = []; }
+        this.handlers[ event ].push({ fn: callback, context: context });
+
+    };
+
+    Cell.prototype.off = function ( event, callback, context ) {
+
+        // cell.off() removes all handlers for all events
+        if ( arguments.length === 0 ) {
+            this.utils.each( this.handlers, function ( handlers, index ) {
+                handlers.splice( 0, handlers.length );
+            }, this );
+        }
+
+        // cell.off( 'change' ) removes all handlers for change event
+        if ( event != null && this.handlers[ event ] && !callback && !context ) {
+            this.handlers[ event ].splice( 0, this.handlers[ event ].length );
+        } else if ( event != null && this.handlers[ event ] ) {
+            this.utils.each( this.handlers[ event ], function ( handler, index, handlers ) {
+                // cell.off( 'change', fn ) removes handlers for change event by callback
+                if ( callback != null && context == null && handler.fn === callback ) {
+                    handlers.splice( index, 1 );
+                }
+                // cell.off( 'change', fn, ctx ) removes handlers for change event by callback and context
+                if ( callback != null && context != null && handler.fn === callback && handler.context === context ) {
+                    handlers.splice( index, 1 );
+                }
+                // cell.off( 'change', null, ctx ) removes handlers for change event by context
+                if ( callback == null && context != null && handler.context === context ) {
+                    handlers.splice( index, 1 );
+                }
+            }, this );
+        } else if ( event == null ) {
+            this.utils.each( this.handlers, function ( handlers, eventName ) {
+                // cell.off( null, fn ) removes handlers for all events by callback
+                // cell.off( null, fn, ctx ) removes handlers for all events by callback and context
+                // cell.off( null, null, ctx ) removes handlers for all events by context
+                this.off( eventName, callback, context );
+            }, this );
+        }
+
+    };
+
+    Cell.prototype.trigger = function ( event ) {
+
+        this.utils.each( this.handlers[ event ], function ( handler ) {
+            handlers.fn.call( handler.context || this );
+        }, this );
+
+    };
+
     Cell.prototype.utils = {
 
         each: function ( arr, fn, ctx ) {
 
-            var i = 0,
-                len = arr.length;
+            var isArr = Object.prototype.toString.call( arr ) == '[object Array]',
+                i     = 0,
+                key   = '',
+                len   = arr.length;
 
-            if ( !arr || !arr.length ) { return false; }
+            if ( !arr ) { return false; }
 
-            for ( i; i < len; i++ ) {
-                fn.call( ctx || Cell, arr[ i ], i, arr );
+            if ( isArr ) {
+                for ( i; i < len; i++ ) {
+                    fn.call( ctx || Cell, arr[ i ], i, arr );
+                }
+            } else {
+                for ( key in arr ) {
+                    if ( Object.prototype.hasOwnProperty.call( arr, key ) ) {
+                        fn.call( ctx || Cell, arr[ key ], key, arr );
+                    }
+                }
             }
 
         }
