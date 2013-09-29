@@ -28,6 +28,7 @@
 
         this._value = val;
         this.updateDeps();
+        this.trigger( 'change', this.value(), this );
 
     };
 
@@ -39,9 +40,14 @@
 
     Cell.prototype.calculate = function () {
 
+        var newValue;
+
         if ( this.formula ) {
-            this._value = this.formula.apply( this, this.getUsageValues() );
-            this.updateDeps();
+            newValue = this.formula.apply( this, this.getUsageValues() );
+            if ( this.value() !== newValue ) {
+                this.set( newValue );
+                this.updateDeps();
+            }
         }
 
     };
@@ -138,8 +144,10 @@
 
     Cell.prototype.trigger = function ( event ) {
 
+        var args = arguments;
+
         this.utils.each( this.handlers[ event ], function ( handler ) {
-            handlers.fn.call( handler.context || this );
+            handler.fn.apply( handler.context || this, Array.prototype.slice.call( args, 1 ) );
         }, this );
 
     };
@@ -151,7 +159,7 @@
             var isArr = Object.prototype.toString.call( arr ) == '[object Array]',
                 i     = 0,
                 key   = '',
-                len   = arr.length;
+                len   = isArr ? arr.length : false;
 
             if ( !arr ) { return false; }
 
