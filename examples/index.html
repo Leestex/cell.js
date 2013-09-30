@@ -6,15 +6,27 @@
     <script type="text/javascript" src="../plugins/jquery.cell.js"></script>
 </head>
 <body>
+    <div id="a">
+        <label>a:</label>
+        <input type="text">
+    </div>
+    <div id="b">
+        <label>b:</label>
+        <input type="text">
+    </div>
+    <div id="c">
+        <label>c:</label>
+        <input type="text">
+    </div>
+    <div id="result">
+        <label>Результат:</label>
+        <input type="text" value="">
+    </div>
+    <div id="shadow-host"></div>
     <script type="text/javascript">
-        var a = cell( 5 );
-        var b = cell( 20 );
-        var c = cell( 42 );
-        var d = cell( function ( x ) { return x + 10; }, a );
-        var e = cell( function ( a1, b1, c1, d1 ) { return a1 + b1 + c1 + d1; }, a, b, c, d );
-        console.log( a.value(), d.value() ); // a => 5, b => 15
-        a.set( 10 );
-        console.log( a.value(), d.value() ); // a => 10, b => 20
+        $( '#result input' ).cell( function ( a, b, c ) {
+            return (a + b) * c;
+        }, $( '#a input' ).cell(), $( '#b input' ).cell(), $( '#c input' ).cell() );
     </script>
 </body>
 </html>

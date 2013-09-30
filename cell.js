@@ -95,6 +95,8 @@
             }
         }, this );
 
+        this.trigger( 'delete' );
+
     };
 
     Cell.prototype.on = function ( event, callback, context ) {
