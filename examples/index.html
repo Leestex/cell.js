@@ -25,7 +25,7 @@
     <div id="shadow-host"></div>
     <script type="text/javascript">
         $( '#result input' ).cell( function ( a, b, c ) {
-            return (a + b) * c;
+            return ( parseInt( a, 10 ) + parseInt( b, 10 ) ) * parseInt( c, 10 );
         }, $( '#a input' ).cell(), $( '#b input' ).cell(), $( '#c input' ).cell() );
     </script>
 </body>
