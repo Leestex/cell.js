@@ -13,7 +13,7 @@
         if ( typeof options[ 0 ] === 'function' ) {
             this.formula = options[ 0 ];
             this.usage = options.slice( 1 );
-            this.utils.each( this.usage, function ( cell, index ) {
+            Cell.utils.each( this.usage, function ( cell, index ) {
                 cell.deps.push( this );
             }, this );
         } else {
@@ -56,7 +56,7 @@
 
         var result = [];
 
-        this.utils.each( this.usage, function ( cell, index ) {
+        Cell.utils.each( this.usage, function ( cell, index ) {
             result[ index ] = cell.value();
         }, this );
 
@@ -66,7 +66,7 @@
 
     Cell.prototype.updateDeps = function () {
 
-        this.utils.each( this.deps, function ( cell ) {
+        Cell.utils.each( this.deps, function ( cell ) {
             cell.calculate();
         }, this );
 
@@ -76,7 +76,7 @@
 
         var result = false;
 
-        this.utils.each( from, function ( cell, index ) {
+        Cell.utils.each( from, function ( cell, index ) {
             if ( cell._id === id ) {
                 result = index;
             }
@@ -88,7 +88,7 @@
 
     Cell.prototype.delete = function () {
 
-        this.utils.each( this.usage, function ( cell ) {
+        Cell.utils.each( this.usage, function ( cell ) {
             var index = this.getDepIndexById( cell.deps, this._id );
             if ( index !== false ) {
                 cell.deps.splice( index, 1 );
@@ -110,7 +110,7 @@
 
         // cell.off() removes all handlers for all events
         if ( arguments.length === 0 ) {
-            this.utils.each( this.handlers, function ( handlers, index ) {
+            Cell.utils.each( this.handlers, function ( handlers, index ) {
                 handlers.splice( 0, handlers.length );
             }, this );
         }
@@ -119,7 +119,7 @@
         if ( event != null && this.handlers[ event ] && !callback && !context ) {
             this.handlers[ event ].splice( 0, this.handlers[ event ].length );
         } else if ( event != null && this.handlers[ event ] ) {
-            this.utils.each( this.handlers[ event ], function ( handler, index, handlers ) {
+            Cell.utils.each( this.handlers[ event ], function ( handler, index, handlers ) {
                 // cell.off( 'change', fn ) removes handlers for change event by callback
                 if ( callback != null && context == null && handler.fn === callback ) {
                     handlers.splice( index, 1 );
@@ -134,7 +134,7 @@
                 }
             }, this );
         } else if ( event == null ) {
-            this.utils.each( this.handlers, function ( handlers, eventName ) {
+            Cell.utils.each( this.handlers, function ( handlers, eventName ) {
                 // cell.off( null, fn ) removes handlers for all events by callback
                 // cell.off( null, fn, ctx ) removes handlers for all events by callback and context
                 // cell.off( null, null, ctx ) removes handlers for all events by context
@@ -148,17 +148,17 @@
 
         var args = arguments;
 
-        this.utils.each( this.handlers[ event ], function ( handler ) {
+        Cell.utils.each( this.handlers[ event ], function ( handler ) {
             handler.fn.apply( handler.context || this, Array.prototype.slice.call( args, 1 ) );
         }, this );
 
     };
 
-    Cell.prototype.utils = {
+    Cell.utils = {
 
         each: function ( arr, fn, ctx ) {
 
-            var isArr = Object.prototype.toString.call( arr ) == '[object Array]',
+            var isArr = this.isArray( arr ),
                 i     = 0,
                 key   = '',
                 len   = isArr ? arr.length : false;
@@ -171,13 +171,53 @@
                 }
             } else {
                 for ( key in arr ) {
-                    if ( Object.prototype.hasOwnProperty.call( arr, key ) ) {
+                    if ( this.hasOwnProperty( arr, key ) ) {
                         fn.call( ctx || Cell, arr[ key ], key, arr );
                     }
                 }
             }
 
+        },
+
+        hasOwnProperty: function ( obj, key ) {
+
+            return Object.prototype.hasOwnProperty.call( obj, key );
+
+        },
+
+        isArray: function ( data ) {
+
+            return Object.prototype.toString.call( data ) == '[object Array]';
+
+        },
+
+        extend: function ( to, from ) {
+
+            this.each( from, function ( value, key ) {
+
+                to[ key ] = value;
+
+            });
+
+            return to;
+
         }
+
+    };
+
+    Cell.extend = function ( props ) {
+
+        var child = function () { return Cell.apply( this, arguments ); };
+
+        Cell.utils.extend( child, Cell );
+
+        var Surrogate = function () { this.constructor = child; };
+        Surrogate.prototype = Cell.prototype;
+        child.prototype = new Surrogate();
+
+        Cell.utils.extend( child.prototype, props );
+
+        return child;
 
     };
 

@@ -14,7 +14,11 @@
         }
 
         cellObject.formula && cellObject.on( 'change', function ( value, cell ) {
-            this.val( value );
+            if ( tagsWithValue.indexOf( $element.get( 0 ).tagName ) === -1 ) {
+                this.text( value );
+            } else {
+                this.val( value );
+            }
         }, $element );
 
         cellObject.on( 'delete', function () {
