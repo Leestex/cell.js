@@ -1,0 +1,8 @@
+title: Cell.js
+description: Simple JavaScript library for FRP
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-midnight
+
+gems:
+  - jekyll-mentions
